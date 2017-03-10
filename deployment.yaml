@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pod-requeue
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: pod-requeue
+  template:
+    metadata:
+      labels:
+        app: pod-requeue
+    spec:
+      containers:
+        - name: pod-requeue
+          image: lachlanevenson/pod-requeue:v1
+          imagePullPolicy: Always
+          command:
+            - "/bin/bash"
+            - "/pod-requeue.sh"
+            # To disable dry-run uncomment the line below
+            - "--execute"

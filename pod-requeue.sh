@@ -80,7 +80,8 @@ pod_requeue() {
       kubectl delete -f $POD_DUMP_JSON && \
       kubectl create -f $POD_DUMP_JSON
     fi
-    echo "---\nSleeping for ${SLEEP} seconds"
+    echo "---"
+    echo "Sleeping for ${SLEEP} seconds"
     sleep $SLEEP
   done
 }
