@@ -22,4 +22,4 @@ spec:
             - "/bin/bash"
             - "/pod-requeue.sh"
             # To disable dry-run uncomment the line below
-            - "--execute"
+            #- "--execute"

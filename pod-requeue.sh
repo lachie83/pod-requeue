@@ -24,7 +24,7 @@ test_kubectl() {
 export_pods() {
 
   # Collect list of all pods matching Status conditions reason of Unschedulable OR OutOfcpu
-    kubectl get po --export --all-namespaces -o json | jq '.items[] | select(.status.conditions[].reason) | select((.status.conditions[].reason == "Unschedulable") or (.status.conditions[].reason == "OutOfcpu"))' > $POD_DUMP_RAW_JSON
+    kubectl get po --export --all-namespaces -o json | jq '.items[] | select(.status.conditions[].reason) | select((.status.conditions[].reason == "InsufficientFreeCPU") or (.status.conditions[].reason == "OutOfcpu"))' > $POD_DUMP_RAW_JSON
 }
 
 process_pods() {
@@ -52,7 +52,6 @@ pod_requeue() {
   if [[ $DRY_RUN == true ]]; then
     while true; do
       export_pods
-      RAW_POD_LIST=$(cat $POD_DUMP_RAW_JSON)
       echo "** Dry run: not executing. The following pods match for deletion:"
       cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.conditions[].reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
       echo "Sleeping for ${SLEEP} seconds"
@@ -67,8 +66,6 @@ pod_requeue() {
     # Collect matching pods and process
     export_pods
     process_pods
-
-    POD_LIST=$(cat $POD_DUMP_JSON)
 
     # Do not run unless there's data in the processed pod dump file
     if [ ! -s $POD_DUMP_JSON ]; then
