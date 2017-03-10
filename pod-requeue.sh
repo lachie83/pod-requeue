@@ -51,11 +51,19 @@ pod_requeue() {
   # Dry run loop
   if [[ $DRY_RUN == true ]]; then
     while true; do
+      
       export_pods
-      echo "** Dry run: not executing. The following pods match for deletion:"
-      cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.conditions[].reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
+
+      if [ ! -s POD_DUMP_RAW_JSON ]; then
+        echo "${POD_DUMP_RAW_JSON} is empty. Nothing to process"
+      else
+        echo "** Dry run: not executing. The following pods match for deletion:"
+        cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.conditions[].reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
+      fi
+
       echo "Sleeping for ${SLEEP} seconds"
       sleep $SLEEP
+      
     done
     exit
   fi
