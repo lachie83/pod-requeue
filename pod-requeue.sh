@@ -22,6 +22,7 @@ test_kubectl() {
 }
 
 export_pods() {
+
   # Collect list of all pods matching Status conditions reason of Unschedulable OR OutOfcpu
     kubectl get po --export --all-namespaces -o json | jq '.items[] | select(.status.conditions[].reason) | select((.status.conditions[].reason == "Unschedulable") or (.status.conditions[].reason == "OutOfcpu"))' > $POD_DUMP_RAW_JSON
 }
