@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ $1 != "--execute" ]]; then
   DRY_RUN=true
@@ -10,6 +10,16 @@ POD_DUMP_RAW_JSON=pod-dump-raw.json
 POD_DUMP_JSON=pod-dump.json
 
 SLEEP=60
+
+# confirm access to kube-api
+test_kubectl() {
+  if kubectl get nodes > /dev/null 2>&1 ; then
+    echo "kubectl command success"
+  else
+    echo "kubectl cannot communicate with a kube-api. exit"
+    exit 1
+  fi
+}
 
 export_pods() {
   # Collect list of all pods matching Status conditions reason of Unschedulable OR OutOfcpu
@@ -34,6 +44,8 @@ process_pods() {
 }
 
 pod_requeue() {
+
+  test_kubectl
 
   # Dry run loop
   if [[ $DRY_RUN == true ]]; then
