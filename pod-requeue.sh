@@ -9,7 +9,7 @@ fi
 POD_DUMP_JSON=pod-dump.json
 
 export_pods() {
-    kubectl get po --export --all-namespaces -o json | jq '.items[] | select(.status.conditions[].reason) | select((.status.conditions[].reason == "Unschedulable") or (.status.conditions[].reason == "OutOfcpu")) |
+    kubectl get po --export --all-namespaces -o json | jq '.items[] | select(.status.conditions[].reason) | select((.status.conditions[].reason == "InsufficientFreeCPU") or (.status.conditions[].reason == "OutOfcpu")) |
   del(
     .status,
     .spec.dnsPolicy,
