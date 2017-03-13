@@ -1,6 +1,6 @@
 FROM ubuntu
 
-MAINTAINER Lachlan Evenson <lachlan.evenson@gmail.com>
+MAINTAINER Lachlan Evenson <lachlan@deis.com>
 
 ENV KUBE_LATEST_VERSION="v1.4.7"
 

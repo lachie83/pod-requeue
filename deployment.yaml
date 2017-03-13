@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: pod-requeue
-          image: lachlanevenson/pod-requeue:v3
+          image: deis/pod-requeue:v4
           imagePullPolicy: Always
           command:
             - "/bin/bash"
