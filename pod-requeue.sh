@@ -31,11 +31,18 @@ export_pods() {
     rm -f $POD_LIST
     rm -f $POD_DUMP_RAW_JSON
 
+    # build list of matching pods which should have the following format
+    #
+    # alloc             flashgames-ozsx01at                                                  0/1       InsufficientFreeCPU       0         1h
+    # alloc             flashgames-rkapz2gg                                                  0/1       InsufficientFreeCPU       0         1h
+    # alloc             flashgames-ro12oauq                                                  0/1       InsufficientFreeCPU       0         54m
+
     kubectl get po --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU|Pending' > $POD_LIST
 
     if [ ! -s $POD_LIST ]; then
       echo "${POD_LIST} is empty. No pods found"
     else
+      # build kubectl command to look like `kubectl get pod croc-hunter3 -n x -o json >> pod-dump-raw.json` and run it through xargs
       cat ${POD_LIST} | awk '{print "get pod "$2 " -n "$1 " -o json"}' | xargs -L1 -t kubectl >> $POD_DUMP_RAW_JSON
     fi
 }
@@ -79,7 +86,7 @@ pod_requeue() {
       else
         echo "** Dry run: not executing. The following pods match for deletion:"
         #cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.conditions[].reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
-        cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}' | xargs -L 1 
+        cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}'
       fi
 
       echo "Sleeping for ${SLEEP} seconds"
@@ -102,7 +109,7 @@ pod_requeue() {
     else
       echo "Deleting and recreating the following pods"
       #cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.conditions[].reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
-      cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}' | xargs -L 1 
+      cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}'
       echo "---"
       kubectl delete -f $POD_DUMP_JSON && \
       kubectl create -f $POD_DUMP_JSON
