@@ -37,7 +37,7 @@ export_pods() {
     # alloc             flashgames-rkapz2gg                                                  0/1       InsufficientFreeCPU       0         1h
     # alloc             flashgames-ro12oauq                                                  0/1       InsufficientFreeCPU       0         54m
 
-    kubectl get po --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU|Pending' > $POD_LIST
+    kubectl get po --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU' > $POD_LIST
 
     if [ ! -s $POD_LIST ]; then
       echo "${POD_LIST} is empty. No pods found"
