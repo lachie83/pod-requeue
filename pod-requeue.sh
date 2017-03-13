@@ -51,7 +51,7 @@ pod_requeue() {
   # Dry run loop
   if [[ $DRY_RUN == true ]]; then
     while true; do
-      
+
       export_pods
 
       if [ ! -s POD_DUMP_RAW_JSON ]; then
@@ -63,7 +63,7 @@ pod_requeue() {
 
       echo "Sleeping for ${SLEEP} seconds"
       sleep $SLEEP
-      
+
     done
     exit
   fi
@@ -91,4 +91,4 @@ pod_requeue() {
   done
 }
 
-pod_requeue $1
+pod_requeue
