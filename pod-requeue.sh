@@ -23,13 +23,13 @@ test_kubectl() {
 }
 
 
-export_pods() {
+# export_pods() {
     # Find pods in status 'OutOfcpu|InsufficientFreeCPU' without using jsonpath
     # This is a workaround until the status.conditions maps are available in the output of a raw get
     # kubectl get pods --no-headers=true --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU'
     # clean up files from existing run
-    rm -f $POD_LIST
-    rm -f $POD_DUMP_RAW_JSON
+    #rm -f $POD_LIST
+    #rm -f $POD_DUMP_RAW_JSON
 
     # build list of matching pods which should have the following format
     #
@@ -37,22 +37,23 @@ export_pods() {
     # alloc             flashgames-rkapz2gg                                                  0/1       InsufficientFreeCPU       0         1h
     # alloc             flashgames-ro12oauq                                                  0/1       InsufficientFreeCPU       0         54m
 
-    kubectl get po --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU' > $POD_LIST
+    #kubectl get po --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU' > $POD_LIST
 
-    if [ ! -s $POD_LIST ]; then
-      echo "${POD_LIST} is empty. No pods found"
-    else
+    #if [ ! -s $POD_LIST ]; then
+      #echo "${POD_LIST} is empty. No pods found"
+    #else
       # build kubectl command to look like `kubectl get pod croc-hunter3 -n x -o json >> pod-dump-raw.json` and run it through xargs
-      cat ${POD_LIST} | awk '{print "get pod "$2 " -n "$1 " -o json"}' | xargs -L1 -t kubectl >> $POD_DUMP_RAW_JSON
-    fi
-}
+     #cat ${POD_LIST} | awk '{print "get pod "$2 " -n "$1 " -o json"}' | xargs -L1 -t kubectl >> $POD_DUMP_RAW_JSON
+    #fi
+#}
 
 # Disabling until we can we determine why outputed metadata is different
-#export_pods() {
+export_pods() {
 
   # Collect list of all pods matching Status conditions reason of Unschedulable OR OutOfcpu
-#    kubectl get po --export --all-namespaces -o json | jq '.items[] | select(.status.conditions[].reason) | select((.status.conditions[].reason == "InsufficientFreeCPU") or (.status.conditions[].reason == "OutOfcpu"))' > $POD_DUMP_RAW_JSON
-#}
+  kubectl get po --export --all-namespaces -o json | jq '.items[] | select(.status.reason) | select((.status.reason == "InsufficientFreeCPU") or (.status.reason == "OutOfcpu"))' > $POD_DUMP_RAW_JSON
+
+}
 
 process_pods() {
     # Remove server generated fields
@@ -85,8 +86,8 @@ pod_requeue() {
         echo "${POD_DUMP_RAW_JSON} is empty. Nothing to process"
       else
         echo "** Dry run: not executing. The following pods match for deletion:"
-        #cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.conditions[].reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
-        cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}'
+        cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
+        #cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}'
       fi
 
       echo "Sleeping for ${SLEEP} seconds"
@@ -108,8 +109,8 @@ pod_requeue() {
       echo "${POD_DUMP_JSON} is empty. Nothing to process"
     else
       echo "Deleting and recreating the following pods"
-      #cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.conditions[].reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
-      cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}'
+      cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
+      #cat ${POD_LIST} | awk '{print "Namespace:"$1 " Pod:"$2 " Reason:"$4}'
       echo "---"
       kubectl delete -f $POD_DUMP_JSON && \
       kubectl create -f $POD_DUMP_JSON
