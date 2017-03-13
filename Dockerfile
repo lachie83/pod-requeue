@@ -1,16 +1,15 @@
-FROM alpine
+FROM ubuntu
 
 MAINTAINER Lachlan Evenson <lachlan.evenson@gmail.com>
 
 ENV KUBE_LATEST_VERSION="v1.4.7"
 
-RUN apk add --update ca-certificates \
- && apk add --update -t deps curl \
- && apk add --update jq bash \
- && curl -L https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
- && chmod +x /usr/local/bin/kubectl \
- && apk del --purge deps \
- && rm /var/cache/apk/*
+RUN apt-get update && apt-get install -y \
+    curl \
+    jq \
+    && curl -L https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY pod-requeue.sh .
 
