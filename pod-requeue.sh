@@ -28,8 +28,8 @@ export_pods() {
     # This is a workaround until the status.conditions maps are available in the output of a raw get
     # kubectl get pods --no-headers=true --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU'
     # clean up files from existing run
-    rm $POD_LIST || true
-    rm $POD_DUMP_RAW_JSON || true
+    rm -f $POD_LIST
+    rm -f $POD_DUMP_RAW_JSON
 
     kubectl get po --all-namespaces | egrep -i 'OutOfcpu|InsufficientFreeCPU' > $POD_LIST
 
