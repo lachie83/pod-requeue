@@ -88,13 +88,9 @@ pod_requeue() {
       echo `date +%D-%H:%M:%S`
       echo "Running delete"
       kubectl delete -f $POD_DUMP_JSON
-      echo "Retrying delete to catch any stragglers"
-      kubectl delete -f $POD_DUMP_JSON || true
       echo `date +%D-%H:%M:%S`
       echo "Running create"
       kubectl create -f $POD_DUMP_JSON
-      echo "Retrying create to catch any stragglers"
-      kubectl create -f $POD_DUMP_JSON || true
     fi
     echo "---"
     echo "Sleeping for ${SLEEP} seconds"
