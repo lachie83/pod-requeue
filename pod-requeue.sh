@@ -78,13 +78,23 @@ pod_requeue() {
 
     # Do not run unless there's data in the processed pod dump file
     if [ ! -s $POD_DUMP_JSON ]; then
+      echo `date +%D %H:%M:%S`
       echo "${POD_DUMP_JSON} is empty. Nothing to process"
     else
+      echo `date +%D-%H:%M:%S`
       echo "Deleting and recreating the following pods"
       cat $POD_DUMP_RAW_JSON | jq -r '[.metadata.name,.metadata.namespace,.status.reason] | "Pod:\(.[0]) Namespace:\(.[1]) Reason:\(.[2])"'
       echo "---"
-      kubectl delete -f $POD_DUMP_JSON && \
+      echo `date +%D-%H:%M:%S`
+      echo "Running delete"
+      kubectl delete -f $POD_DUMP_JSON
+      echo "Retryind delete to catch and stragglers"
+      kubectl delete -f $POD_DUMP_JSON || true
+      echo `date +%D-%H:%M:%S`
+      echo "Running create"
       kubectl create -f $POD_DUMP_JSON
+      echo "Retryind create to catch and stragglers"
+      kubectl create -f $POD_DUMP_JSON || true
     fi
     echo "---"
     echo "Sleeping for ${SLEEP} seconds"
