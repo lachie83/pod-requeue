@@ -34,6 +34,7 @@ process_pods() {
     del(
       .status,
       .spec.dnsPolicy,
+      .spec.nodeName,
       .spec.securityContext,
       .spec.terminationGracePeriodSeconds,
       .spec.restartPolicy,
