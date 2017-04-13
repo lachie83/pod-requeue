@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: pod-requeue
-          image: deis/pod-requeue:v6
+          image: deis/pod-requeue:v8
           imagePullPolicy: Always
           env:
           - name: REQUEUE_SLEEP
