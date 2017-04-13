@@ -55,6 +55,7 @@ pod_requeue() {
     while true; do
 
       export_pods
+      process_pods
 
       if [ ! -s $POD_DUMP_RAW_JSON ]; then
         echo "${POD_DUMP_RAW_JSON} is empty. Nothing to process"
