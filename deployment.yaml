@@ -18,6 +18,9 @@ spec:
         - name: pod-requeue
           image: deis/pod-requeue:v6
           imagePullPolicy: Always
+          env:
+          - name: REQUEUE_SLEEP
+            value: 60
           command:
             - "/bin/bash"
             - "/pod-requeue.sh"

@@ -9,7 +9,7 @@ fi
 POD_DUMP_RAW_JSON=pod-dump-raw.json
 POD_DUMP_JSON=pod-dump.json
 
-SLEEP=60
+SLEEP=${REQUEUE_SLEEP:=60}
 
 # confirm access to kube-api
 test_kubectl() {
