@@ -37,7 +37,6 @@ process_pods() {
       .spec.nodeName,
       .spec.securityContext,
       .spec.terminationGracePeriodSeconds,
-      .spec.restartPolicy,
       .metadata.uid,
       .metadata.selfLink,
       .metadata.resourceVersion,
